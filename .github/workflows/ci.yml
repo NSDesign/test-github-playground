@@ -10,16 +10,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Emscripten
+    - name: Set up and Verify Emscripten
       run: |
         git clone https://github.com/emscripten-core/emsdk.git
         cd emsdk
         ./emsdk install latest
         ./emsdk activate latest
-        echo "source $(pwd)/emsdk_env.sh" >> $GITHUB_ENV
-
-    - name: Source Emscripten environment
-      run: source $GITHUB_ENV
-
-    - name: Verify Emscripten installation
-      run: emcc --version
+        source ./emsdk_env.sh
+        emcc --version
