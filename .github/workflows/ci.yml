@@ -8,13 +8,27 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
-    - name: Set up and Verify Emscripten
+    - name: Cache Emscripten SDK
+      id: cache-emsdk
+      uses: actions/cache@v3
+      with:
+        path: emsdk
+        key: ${{ runner.os }}-emsdk-${{ hashFiles('emsdk/emsdk.lock') }}
+
+    - name: Set up Emscripten and persist environment
       run: |
-        git clone https://github.com/emscripten-core/emsdk.git
+        # Clone the repository only if the directory doesn't exist
+        if [ ! -d "emsdk" ]; then
+          git clone https://github.com/emscripten-core/emsdk.git
+        fi
         cd emsdk
         ./emsdk install latest
         ./emsdk activate latest
+        # Source the environment to get all necessary variables
         source ./emsdk_env.sh
+        # Persist environment variables for subsequent steps
+        echo "PATH=$PATH" >> $GITHUB_ENV
+        # Optionally, export other variables as needed
         emcc --version
