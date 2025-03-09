@@ -16,7 +16,10 @@ jobs:
         cd emsdk
         ./emsdk install latest
         ./emsdk activate latest
-        source ./emsdk_env.sh
+        echo "source $(pwd)/emsdk_env.sh" >> $GITHUB_ENV
 
     - name: Verify Emscripten installation
       run: emcc --version
+      env:
+        EMSDK: ${{ github.workspace }}/emsdk
+        PATH: ${{ github.workspace }}/emsdk/upstream/emscripten:$PATH
